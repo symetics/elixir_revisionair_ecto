@@ -73,7 +73,7 @@ Example:
 
 {:ok, post} = Repo.transaction fn ->
   post = Repo.insert!(%Post{title: "Test", content: "Lorem ipsum"})
-  :ok = Revisionair.store_revision(post, Post, post.id)
+  {:ok, revision}= Revisionair.store_revision(post, Post, post.id)
   post
 end
 

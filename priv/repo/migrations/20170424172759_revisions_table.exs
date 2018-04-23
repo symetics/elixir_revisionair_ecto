@@ -10,6 +10,9 @@ defmodule RevisionairEcto.Repo.Migrations.RevisionsTable do
       add :metadata, :map, null: false
       add :revision, :integer, null: false
       add :struct_name, :string
+
+      # For Postgrex, use `type: :timestamptz`
+      timestamps([{:updated_at, false}, type: :timestamptz])
     end
 
     create index(:revisions, [:item_type, :item_id])

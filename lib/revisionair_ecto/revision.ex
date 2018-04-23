@@ -10,6 +10,8 @@ defmodule RevisionairEcto.Revision do
     field(:metadata, :map)
     field(:revision, :integer)
     field(:struct_name, :string)
+
+    timestamps([{:updated_at, false}])
   end
 
   @required_fields ~w(item_type item_id encoded_item revision)a

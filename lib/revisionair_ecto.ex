@@ -25,14 +25,7 @@ defmodule RevisionairEcto do
                     revision: next_revision(item_type, item_id, repo, revisions_table, item_id_type)
                   })
 
-    {1, _} = repo.insert_all(revisions_table, [%{
-                                   item_type: item_type,
-                                   item_id: encoded_item_id,
-                                   encoded_item: encode_item(item),
-                                   metadata: metadata,
-                                   revision: next_revision(item_type, item_id, repo, revisions_table, item_id_type)
-                                 }])
-    :ok
+    {:ok, put_in_metadata({decode_item(r.encoded_item), r.metadata}, %{revision: r.revision, inserted_at: r.inserted_at})}
   end
 
   @doc false
@@ -42,8 +35,8 @@ defmodule RevisionairEcto do
     revisions_table = extract_table_name(options)
     item_id_type = item_id_type(options)
 
-    repo.all(from r in revisions_table, where: r.item_type == ^item_type and r.item_id == type(^item_id, ^item_id_type), select: {r.revision, {r.encoded_item, r.metadata}}, order_by: [desc: :revision])
-    |> Enum.map(fn {revision, {item, metadata}} -> put_revision_in_metadata({decode_item(item), metadata}, revision) end)
+    repo.all(from r in revisions_table, where: r.item_type == ^item_type and r.item_id == type(^item_id, ^item_id_type), select: {r.revision, r.inserted_at, {r.encoded_item, r.metadata}}, order_by: [desc: :revision])
+    |> Enum.map(fn {revision, inserted_at, {item, metadata}} -> put_in_metadata({decode_item(item), metadata}, %{revision: revision, inserted_at: inserted_at}) end)
   end
 
   @doc false
@@ -59,10 +52,10 @@ defmodule RevisionairEcto do
           where: r.item_type == ^item_type and r.item_id == type(^item_id, ^item_id_type),
           limit: 1,
           order_by: [desc: :revision],
-          select: {r.revision, {r.encoded_item, r.metadata}}
+          select: {r.revision, r.inserted_at, {r.encoded_item, r.metadata}}
         ) do
       [] -> :error
-      [{revision, {item, metadata}}] -> {:ok, put_revision_in_metadata({decode_item(item), metadata}, revision)}
+      [{revision, inserted_at, {item, metadata}}] -> {:ok, put_in_metadata({decode_item(item), metadata}, %{revision: revision, inserted_at: inserted_at})}
     end
   end
 
@@ -72,15 +65,14 @@ defmodule RevisionairEcto do
       item_type = to_string item_type
       revisions_table = extract_table_name(options)
       item_id_type = item_id_type(options)
-
       case repo.all(
             from r in revisions_table,
             where: r.item_type == ^item_type and r.item_id == type(^item_id, ^item_id_type) and r.revision == ^revision,
             limit: 1,
-            select: {r.revision, {r.encoded_item, r.metadata}}
+            select: {r.revision, r.inserted_at, {r.encoded_item, r.metadata}}
           ) do
       [] -> :error
-      [{revision, {item, metadata}}] -> {:ok, put_revision_in_metadata({decode_item(item), metadata}, revision)}
+      [{revision, inserted_at, {item, metadata}}] -> {:ok, put_in_metadata({decode_item(item), metadata}, %{revision: revision, inserted_at: inserted_at})}
     end
   end
 
@@ -98,8 +90,8 @@ defmodule RevisionairEcto do
     options[:repo] || Application.fetch_env!(:revisionair_ecto, :repo)
   end
 
-  defp put_revision_in_metadata({item, metadata}, revision) do
-    {item, Map.put(metadata, :revision, revision)}
+  defp put_in_metadata({item, metadata}, data) do
+    {item, Map.merge(metadata, data)}
   end
 
   defp next_revision(item_type, item_id, repo, revisions_table, item_id_type) do
