@@ -23,7 +23,7 @@ defmodule RevisionairEctoTest do
     assert Revisionair.store_revision(f1b, [storage: RevisionairEcto]) == :ok
     assert Revisionair.list_revisions(f1b, [storage: RevisionairEcto]) == [{f1b, %{revision: 1}},
                                                                                           {f1, %{revision: 0}}]
-    assert Revisionair.delete_all_revisions_of(f1b, [storage: RevisionairEcto]) == :ok
+    assert Revisionair.delete_all_revisions_of(f1b, [storage: RevisionairEcto]) == {2, nil}
     assert Revisionair.list_revisions(f1b, [storage: RevisionairEcto]) == []
     assert Revisionair.list_revisions(f1, [storage: RevisionairEcto]) == []
 
@@ -63,7 +63,7 @@ defmodule RevisionairEctoTest do
     assert Revisionair.get_revision(post, 0) == {:ok, {post, %{revision: 0}}}
     assert Revisionair.newest_revision(post) == {:ok, {post, %{revision: 0}}}
     assert Revisionair.list_revisions(post) == [{post, %{revision: 0}}]
-    assert Revisionair.delete_all_revisions_of(post) == :ok
+    assert Revisionair.delete_all_revisions_of(post) == {1, nil}
     assert Revisionair.list_revisions(post) == []
   end
 

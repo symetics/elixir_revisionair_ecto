@@ -84,7 +84,6 @@ defmodule RevisionairEcto do
     item_id_type = item_id_type(options)
 
     repo.delete_all(from r in revisions_table, where: r.item_type == ^item_type and r.item_id == type(^item_id, ^item_id_type))
-    :ok
   end
 
   defp extract_repo(options) do
