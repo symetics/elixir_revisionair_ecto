@@ -5,8 +5,6 @@ defmodule RevisionairEcto.Repo.Migrations.RevisionsTable do
   def change do
     create table(:revisions) do
       add :item_type, :string, null: false
-      # If you want to use UUIDs instead, alter the following line to
-      # add :item_id, :uuid, null: false
       add :item_id, :integer, null: false
       add :encoded_item, :binary, null: false
       add :metadata, :map, null: false

@@ -24,8 +24,6 @@ defmodule RevisionairEcto.Repo.Migrations.RevisionsTable do
   def change do
     create table(:revisions) do
       add :item_type, :string, null: false
-      # If you want to use UUIDs instead, alter the following line to
-      # add :item_id, :uuid, null: false
       add :item_id, :integer, null: false
       add :encoded_item, :binary, null: false
       add :metadata, :map, null: false
@@ -49,8 +47,6 @@ config :revisionair, storage: RevisionairEcto
 # Default repo used by RevisionairEcto:
 config :revisionair_ecto, repo: RevisionairEcto.Repo
 
-# Uncomment if you use UUIDs instead of numerical ids:
-# config :revisionair_ecto, item_id_type: :uuid
 
 # Uncomment if you use a different table than "revisions" to store the revisions information:
 # config :revisionair_ecto, revisions_table: "table_name"
@@ -60,7 +56,7 @@ Of course, any of these settings can also be specified in the `options` paramete
 
 ```elixir
 
-Revisionair.store_revision(my_post, [storage: RevisionairEcto, storage_options: [repo: MyOtherRepo, revisions_table: "my_revisions", item_id_type: :uuid]])
+Revisionair.store_revision(my_post, [storage: RevisionairEcto, storage_options: [repo: MyOtherRepo, revisions_table: "my_revisions"]])
 
 ```
 

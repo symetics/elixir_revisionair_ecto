@@ -67,21 +67,4 @@ defmodule RevisionairEctoTest do
     assert Revisionair.list_revisions(post) == []
   end
 
-  test "UUID integration" do
-    # Application.put_env(:revisionair_ecto, :revisions_table, "uuid_revisions")
-
-    {:ok, post} = Repo.transaction fn ->
-      post = Repo.insert!(%UUIDPost{title: "Test", content: "Lorem ipsum"})
-      :ok = Revisionair.store_revision(post, UUIDPost, post.id, storage_options: [revisions_table: "uuid_revisions", item_id_type: :uuid])
-      post
-    end
-
-    assert Repo.all(UUIDPost) != []
-    assert Revisionair.get_revision(post, 0, storage_options: [revisions_table: "uuid_revisions", item_id_type: :uuid]) == {:ok, {post, %{revision: 0}}}
-    assert Revisionair.newest_revision(post, storage_options: [revisions_table: "uuid_revisions", item_id_type: :uuid]) == {:ok, {post, %{revision: 0}}}
-    assert Revisionair.list_revisions(post, storage_options: [revisions_table: "uuid_revisions", item_id_type: :uuid]) == [{post, %{revision: 0}}]
-    assert Revisionair.delete_all_revisions_of(post, storage_options: [revisions_table: "uuid_revisions", item_id_type: :uuid]) == :ok
-    assert Revisionair.list_revisions(post, storage_options: [revisions_table: "uuid_revisions", item_id_type: :uuid]) == []
-  end
-
 end
