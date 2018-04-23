@@ -48,15 +48,15 @@ config :revisionair, storage: RevisionairEcto
 config :revisionair_ecto, repo: RevisionairEcto.Repo
 
 
-# Uncomment if you use a different table than "revisions" to store the revisions information:
-# config :revisionair_ecto, revisions_table: "table_name"
+# Uncomment if you use a different table than RevisionairEcto.Revision to store the revisions information:
+# config :revisionair_ecto, revisions_schema: MyApp.Schema
 ```
 
 Of course, any of these settings can also be specified in the `options` parameter when calling any of the Revisionair functions:
 
 ```elixir
 
-Revisionair.store_revision(my_post, [storage: RevisionairEcto, storage_options: [repo: MyOtherRepo, revisions_table: "my_revisions"]])
+Revisionair.store_revision(my_post, [storage: RevisionairEcto, storage_options: [repo: MyOtherRepo, revisions_schema: MyRevisions]])
 
 ```
 

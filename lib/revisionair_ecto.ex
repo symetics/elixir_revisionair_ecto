@@ -6,6 +6,7 @@ defmodule RevisionairEcto do
   """
 
   import Ecto.Query
+  alias RevisionairEcto.Revision
 
   @doc false
   def store_revision(item, item_type, item_id, metadata, options) do
@@ -15,7 +16,14 @@ defmodule RevisionairEcto do
     item_id_type = item_id_type(options)
     encoded_item_id = encode_item_id(item_id, item_id_type)
 
-    IO.inspect({item, item_type, item_id, metadata, options, item_id_type})
+    {:ok, r} =
+      repo.insert(%Revision{
+                    item_type: item_type,
+                    item_id: encoded_item_id,
+                    encoded_item: encode_item(item),
+                    metadata: metadata,
+                    revision: next_revision(item_type, item_id, repo, revisions_table, item_id_type)
+                  })
 
     {1, _} = repo.insert_all(revisions_table, [%{
                                    item_type: item_type,
@@ -119,7 +127,7 @@ defmodule RevisionairEcto do
   end
 
   defp extract_table_name(options) do
-    options[:revisions_table] || Application.get_env(:revisionair_ecto, :revisions_table, "revisions")
+    options[:revisions_schema] || Application.get_env(:revisionair_ecto, :revisions_schema, RevisionairEcto.Revision)
   end
 
   defp item_id_type(options) do
