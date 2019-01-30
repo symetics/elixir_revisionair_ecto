@@ -2,19 +2,19 @@ defmodule RevisionairEcto.Mixfile do
   use Mix.Project
 
   def project do
-    [app: :revisionair_ecto,
-     version: "1.0.1",
-     elixir: "~> 1.4",
-     build_embedded: Mix.env == :prod,
-     start_permanent: Mix.env == :prod,
-     deps: deps(),
-     elixirc_paths: elixirc_paths(Mix.env),
-     aliases: aliases(),
-
-     name: "RevisionairEcto",
-     description: description(),
-     package: package(),
-     source_url: "https://github.com/Qqwy/elixir_revisionair_ecto"
+    [
+      app: :revisionair_ecto,
+      version: "1.0.1",
+      elixir: "~> 1.4",
+      build_embedded: Mix.env() == :prod,
+      start_permanent: Mix.env() == :prod,
+      deps: deps(),
+      elixirc_paths: elixirc_paths(Mix.env()),
+      aliases: aliases(),
+      name: "RevisionairEcto",
+      description: description(),
+      package: package(),
+      source_url: "https://github.com/symetics/elixir_revisionair_ecto"
     ]
   end
 
@@ -42,7 +42,6 @@ defmodule RevisionairEcto.Mixfile do
       {:ecto_sql, "~> 3.0"},
       {:postgrex, "~> 0.13"},
       {:jason, "~> 1.0"},
-
       {:ex_doc, ">= 0.0.0", only: :dev}
     ]
   end
@@ -54,7 +53,7 @@ defmodule RevisionairEcto.Mixfile do
   defp aliases do
     [
       # Ensures database is reset before tests are run
-      "test": ["ecto.create --quiet", "ecto.migrate", "test"]
+      test: ["ecto.create --quiet", "ecto.migrate", "test"]
     ]
   end
 
